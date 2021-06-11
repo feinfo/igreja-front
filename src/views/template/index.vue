@@ -1,5 +1,7 @@
 <template>
-    <sidebar-menu :menu="menu" />
+    <b-container>
+        <sidebar-menu :menu="menu" :width="width" @toggle-collapse="onToggleCollapse"/>
+    </b-container>
 </template>
 <script>
 import {SidebarMenu} from 'vue-sidebar-menu'
@@ -15,12 +17,11 @@ export default {
                     {
                         header: true,
                         title: 'Menu',
-                        hiddenOnCollapse: true
                     },
                     {
                         href: '/',
                         title: 'Dashboard',
-                        icon: 'fab fa-medium'
+                        icon: 'fa fa-chart-bar'
                     },
                     {
                         href: '/charts',
@@ -32,12 +33,21 @@ export default {
                                 title: 'Sub Link'
                             }
                         ]
-                    }
-                ]
+                    },
+                    
+                ],
+                width: '150px',
         };
-    }
+    },
+    methods: {
+    onToggleCollapse(collapsed) {
+        //console.log("escondendo" + collapsed)
+        this.$emit('collapsed', collapsed);
+    },
+    //onItemClick(event, item) {}
+}
 }
 </script>
-<style lang="stylus" scoped>
+<style scoped>
 
 </style>

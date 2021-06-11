@@ -8,7 +8,7 @@
                             <b-col>
                                 <b-form-group label="Login:" label-for="login" label-cols-sm="3" class="mt-2">
                                     <div class="text-center">
-                                        <b-form-input type="email" required placeholder="Digite seu usuário" v-model="usuario.login" class="col-12" :state="autenticado"/>
+                                        <b-form-input type="email" required placeholder="Digite seu usuário" v-model="usuario.login" class="col-12" :state="erroAutenticado"/>
                                     </div>
                                 </b-form-group>
                             </b-col>
@@ -16,14 +16,14 @@
                         <b-row>
                             <b-col> 
                                 <b-form-group label="Senha:" label-for="senha" label-cols-sm="3" class="mt-2">
-                                    <b-form-input type="password" placeholder="Digite sua senha" class="col-12" v-model="usuario.senha" :state="autenticado"/>
+                                    <b-form-input type="password" required placeholder="Digite sua senha" class="col-12" v-model="usuario.senha" :state="erroAutenticado"/>
                                 </b-form-group>
                             </b-col>
                         </b-row>
                         <b-row>
                             <b-col> 
-                                <b-form-invalid-feedback :state="autenticado">
-                                    Usuário ou senha incorreto !
+                                <b-form-invalid-feedback :state="erroAutenticado">
+                                    Usuário ou senha incorreta!
                                 </b-form-invalid-feedback>
                                 <b-form-invalid-feedback :state="!erroDesc">
                                     Erro desconhecido, entrar em contato com o desenvolvedor!
@@ -69,7 +69,7 @@ export default {
             login:null,
             senha:null
         },
-        autenticado: null,
+        erroAutenticado: null,
         erroDesc: null,
         loading: null,
     };
@@ -83,30 +83,44 @@ methods: {
         ).then(response => {
             if(response.status == undefined)
             {
-                this.autenticado = null;
+                this.erroAutenticado = null;
                 this.erroDesc = true;
             }
             else{
-                this.autenticado = null;
-                this.erroDesc = null;
+                let token = response.data.access_token;
+                api.post("me",  stringify({token})).then(responsed => {
+                    localStorage.setItem('nomeUsuario', responsed.data['0'].name);
+                    localStorage.setItem('tipoPerfil',  responsed.data['0'].perfil.ds_descricao);
+                    //console.log(response);
+                    this.erroAutenticado = null;
+                    this.erroDesc = null;
+                    localStorage.setItem('token', token);
+                    localStorage.setItem('usuario',response.data.usuario.name);
+                    //localStorage.setItem('cd_usuario',response.data.usuario.cd_usuario);
+                    //localStorage.setItem('email',response.data.usuario.email);
+                    this.$router.push('dashboard');
+                });
+               
                 //redirecionar para o dashboard
             }
         }).catch(erro => {
             if(erro.response && erro.response.status == 401)
             {
+                this.erroAutenticado = false;
                 this.erroDesc = null
-                this.autenticado = false;
+                
             }
             else 
             {
+                this.erroAutenticado = null;
                 this.erroDesc = true;
-                this.autenticado = null;
+                
             }
         }).finally(() => this.loading = false);
         
     },
     onReset: function(){
-        this.autenticado = null;
+        this.erroAutenticado = null;
         this.usuario.login = "";
         this.usuario.senha = "";
     }
