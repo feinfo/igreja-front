@@ -1,6 +1,6 @@
 <template>
     <b-container>
-        <div class="d-flex justify-content-center">
+        <div class="d-flex justify-content-center centro">
             <b-card  :img-src="require('@/assets/560px-Logoccb.png')" title="CCB ÁREA RESTRITA" border-variant="primary">
                 <b-card-text>
                     <b-form @submit="onSubmit" @reset="onReset">
@@ -52,6 +52,9 @@
     </b-container>
 </template>
 <style>
+.centro{
+    margin-top: 10%;
+}
 </style>
 <script>
 //import sideBar from '@/views/template/index.vue';
